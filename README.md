@@ -1,0 +1,96 @@
+# Assignment 2: Multi-Model Database Benchmarking
+
+Big Data Storage and Retrieval — Master's course project.
+
+Benchmarking of four database models over a real-world e-commerce event dataset.
+
+---
+
+## Project Structure
+
+```
+assignment2/
+├── data/
+│   ├── raw/            # Raw source CSV files (not tracked by git)
+│   └── cleaned/        # Pre-processed CSV files produced by clean_data.py (not tracked)
+├── models_fin/         # Schema diagrams and model designs
+├── screenshots/        # Terminal output screenshots for the report
+├── scripts/            # All Python scripts and their bash wrappers
+│   ├── clean_data.py           # Pre-processing: produces data/cleaned/
+│   ├── load_data_psql.py       # Load PostgreSQL 3NF
+│   ├── load_data_psql_own.py   # Load PostgreSQL Own (denormalised)
+│   ├── load_data_mongo.py      # Load MongoDB
+│   ├── load_data_memgraph.py   # Load Memgraph
+│   ├── q1a_*.py                # Query 1a: Campaign performance
+│   ├── q1b_*.py                # Query 1b: User targeting score
+│   ├── q2_*.py                 # Query 2: Personalised recommendations
+│   ├── q3_*.py                 # Query 3: Full-text product search
+│   ├── benchmark.py            # Benchmark runner (5 runs per query/db)
+│   └── *.sh                    # Bash wrappers for every .py script
+├── benchmark_results.csv       # Raw timing data from benchmark run
+├── report.tex                  # LaTeX source of the report
+├── report.pdf                  # Compiled report
+└── README.md
+```
+
+---
+
+## Databases
+
+| Database | Model | Deployment |
+|---|---|---|
+| PostgreSQL 3NF | Fully normalised relational | Docker |
+| PostgreSQL Own | Denormalised (inline category in events) | Docker |
+| MongoDB | Document store with embedded product metadata | Docker |
+| Memgraph | Property graph (MAGE) | Docker |
+
+---
+
+## Queries
+
+| Query | Description |
+|---|---|
+| Q1a | Top-10 campaigns by purchase conversion rate |
+| Q1b | Top-20 users scored by personal + friends' purchases |
+| Q2  | Personalised product recommendations (top-3 categories × top-5 products) |
+| Q3  | Full-text search by category keyword, ranked by global popularity |
+
+---
+
+## Setup
+
+### Requirements
+- Docker Desktop
+- Python 3.13+
+- `pip install psycopg2-binary pymongo neo4j pandas tabulate`
+
+### Run pipeline
+
+```bash
+# 1. Pre-process raw data
+bash scripts/clean_data.sh
+
+# 2. Start containers and load data
+bash scripts/load_data_psql.sh
+bash scripts/load_data_psql_own.sh
+bash scripts/load_data_mongo.sh
+bash scripts/load_data_memgraph.sh
+
+# 3. Run individual queries (example)
+bash scripts/q2_psql.sh
+
+# 4. Run full benchmark (5 runs per query per database)
+bash scripts/benchmark.sh
+```
+
+---
+
+## Dataset
+
+E-commerce event log containing user interactions (views, cart additions, purchases),
+marketing campaign messages, and social friendship graph.
+
+**SCD Type 2 surrogate keys** (`product_sk`, `category_sk`) were introduced to
+preserve historical category assignments — products that were re-categorised over
+time are stored as separate versioned entries, ensuring every event resolves the
+category that was current at event time.
