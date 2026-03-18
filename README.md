@@ -17,7 +17,7 @@ Benchmarking of four database models over a real-world e-commerce event dataset.
 >     └── raw/          ← place the original source CSV files here
 > ```
 >
-> Then run `python scripts/clean_data.py` — it will produce `data/cleaned/` automatically.
+> Then follow the **Run Pipeline** section below.
 
 ---
 
