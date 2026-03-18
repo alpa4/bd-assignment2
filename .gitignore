@@ -1,6 +1,13 @@
-# Raw and cleaned data (large CSV files)
-data/raw/
-data/cleaned/
+# Large data files (>100MB — GitHub limit)
+init_data/
+data/raw/events.csv
+data/raw/messages.csv
+data/raw/friends.csv
+data/cleaned/events.csv
+data/cleaned/messages.csv
+data/cleaned/friends.csv
+data/cleaned/clients.csv
+data/cleaned/client_first_purchase_date.csv
 
 # Python
 __pycache__/
